@@ -22,7 +22,6 @@ from django.template.loader import render_to_string
 from .models import User, Empresa, Candidato, Vaga, Candidatura, AreaAtuacao
 from .serializers import *
 from django.db import IntegrityError, transaction
-from django.contrib.auth.hashers import make_password
 import logging
 
 # ==============================================================================
@@ -43,188 +42,92 @@ class IsCandidato(permissions.BasePermission):
 # AUTENTICAÇÃO
 # ==============================================================================
 
-from django.db import IntegrityError, transaction
+logger = logging.getLogger(__name__)
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register(request):
-    import logging
-    logger = logging.getLogger(__name__)
-    
-    # Registrar os dados recebidos para debug
-    logger.info(f"Tentativa de registro com dados: {request.data}")
-    
-    # Primeiro, verificar se o usuário já existe antes de tentar criar
-    email = request.data.get('email')
-    username = request.data.get('username')
-    
-    # Verificar email existente
-    if email and User.objects.filter(email=email).exists():
-        return Response({
-            'detail': 'Um usuário com este email já está registrado.',
-            'field_errors': {'email': ['Este email já está em uso.']}
-        }, status=status.HTTP_400_BAD_REQUEST)
-    
-    # Verificar username existente
-    if username and User.objects.filter(username=username).exists():
-        return Response({
-            'detail': 'Um usuário com este nome de usuário já está registrado.',
-            'field_errors': {'username': ['Este nome de usuário já está em uso.']}
-        }, status=status.HTTP_400_BAD_REQUEST)
-    
-    # Trabalhar diretamente com request.data em vez de fazer cópia
-    # (evita problemas com arquivos que não podem ser copiados)
-    registration_data = request.data
-    
-    # Garantir que campos obrigatórios estejam presentes
-    user_type = registration_data.get('user_type')
+    logger.info(f"Tentativa de registro: {request.data}")
+    data = request.data
+
+    # Normalizar user_type / tipo_usuario
+    user_type = data.get('user_type') or data.get('tipo_usuario')
     if not user_type:
-        return Response({
-            'detail': 'Tipo de usuário é obrigatório.',
-            'field_errors': {'user_type': ['Este campo é obrigatório.']}
-        }, status=status.HTTP_400_BAD_REQUEST)
-    
-    # Validar campos obrigatórios básicos
-    required_fields = ['email', 'username', 'password']
-    missing_fields = []
-    for field in required_fields:
-        if not registration_data.get(field):
-            missing_fields.append(field)
-    
-    if missing_fields:
-        field_errors = {field: ['Este campo é obrigatório.'] for field in missing_fields}
-        return Response({
-            'detail': 'Campos obrigatórios não preenchidos.',
-            'field_errors': field_errors
-        }, status=status.HTTP_400_BAD_REQUEST)
-    
-    # Preparar dados para o serializer (sem modificar o request.data original)
-    user_data = {
-        'username': registration_data.get('username'),
-        'email': registration_data.get('email'),
-        'password': registration_data.get('password'),
-        'user_type': registration_data.get('user_type'),
+        return Response({'detail': 'Campo user_type/tipo_usuario é obrigatório.'},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    # Verificar duplicidade
+    if User.objects.filter(email=data.get('email')).exists():
+        return Response({'detail': 'Email já cadastrado.', 'field_errors': {'email': ['Já existe.']}},
+                        status=status.HTTP_400_BAD_REQUEST)
+    if User.objects.filter(username=data.get('username')).exists():
+        return Response({'detail': 'Username já cadastrado.', 'field_errors': {'username': ['Já existe.']}},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    # Campos obrigatórios
+    missing = [f for f in ['username','email','password'] if not data.get(f)]
+    if missing:
+        return Response({'detail': 'Campos obrigatórios não preenchidos.',
+                         'field_errors': {f: ['Obrigatório'] for f in missing}},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    # Payload para serializer
+    user_payload = {
+        'username': data['username'],
+        'email': data['email'],
+        'password': data['password'],
+        'user_type': user_type,
     }
-    
-    # Adicionar outros campos se fornecidos
-    if registration_data.get('first_name'):
-        user_data['first_name'] = registration_data.get('first_name')
-    if registration_data.get('last_name'):
-        user_data['last_name'] = registration_data.get('last_name')
-    
-    serializer = UserSerializer(data=user_data)
-    if serializer.is_valid():
-        try:
-            with transaction.atomic():
-                user = serializer.save()
-                logger.info(f"Usuário criado com sucesso: {user.id}")
-                
-                # Criar perfil baseado no tipo de usuário
-                if user.user_type == 'empresa':
-                    # Usar 'nome' se 'nome_empresa' não for fornecido
-                    nome_empresa = (request.data.get('nome_empresa') or 
-                                  request.data.get('nome') or 
-                                  request.data.get('nomeCompleto') or '')
-                    
-                    if not nome_empresa:
-                        raise ValueError("Nome da empresa é obrigatório")
-                    
-                    empresa = Empresa.objects.create(
-                        user=user,
-                        nome=nome_empresa,
-                        email=user.email
-                    )
-                    logger.info(f"Perfil de empresa criado: {empresa.id}")
-                    
-                elif user.user_type == 'candidato':
-                    # Usar diferentes variações do nome que podem vir do frontend
-                    nome_completo = (request.data.get('nome_completo') or 
-                                   request.data.get('nomeCompleto') or
-                                   request.data.get('nome') or '')
-                    
-                    if not nome_completo:
-                        raise ValueError("Nome completo é obrigatório")
-                    
-                    # Criar candidato sem CPF por enquanto (verificar se o modelo aceita)
-                    candidato_data = {
-                        'user': user,
-                        'nome_completo': nome_completo,
-                        'email': user.email,
-                    }
-                    
-                    # Só adicionar CPF se o modelo tiver esse campo
-                    cpf = request.data.get('cpf', '')
-                    if cpf:
-                        candidato_data['cpf'] = cpf
-                    
-                    try:
-                        candidato = Candidato.objects.create(**candidato_data)
-                        logger.info(f"Perfil de candidato criado: {candidato.id}")
-                    except TypeError as e:
-                        # Se der erro de campo não esperado, criar sem CPF
-                        logger.warning(f"Erro ao criar candidato com CPF: {e}")
-                        candidato = Candidato.objects.create(
-                            user=user,
-                            nome_completo=nome_completo,
-                            email=user.email
-                        )
-                        logger.info(f"Perfil de candidato criado sem CPF: {candidato.id}")
-                
-                # Gerar tokens
-                refresh = RefreshToken.for_user(user)
-                return Response({
-                    'user': UserSerializer(user).data,
-                    'refresh': str(refresh),
-                    'access': str(refresh.access_token),
-                    'message': 'Usuário criado com sucesso!'
-                }, status=status.HTTP_201_CREATED)
+    if data.get('first_name'): user_payload['first_name'] = data['first_name']
+    if data.get('last_name'):  user_payload['last_name']  = data['last_name']
 
-        except ValueError as e:
-            logger.error(f"Erro de validação durante registro: {str(e)}")
-            return Response({
-                'detail': f'Erro de validação: {str(e)}',
-            }, status=status.HTTP_400_BAD_REQUEST)
-            
-        except IntegrityError as e:
-            logger.error(f"Erro de integridade durante registro: {str(e)}")
-            # Tratar erros de integridade restantes
-            error_message = str(e).lower()
-            if 'email' in error_message:
-                return Response({
-                    'detail': 'Este email já está registrado no sistema.',
-                    'field_errors': {'email': ['Este email já está em uso.']}
-                }, status=status.HTTP_400_BAD_REQUEST)
-            elif 'username' in error_message:
-                return Response({
-                    'detail': 'Este nome de usuário já está registrado no sistema.',
-                    'field_errors': {'username': ['Este nome de usuário já está em uso.']}
-                }, status=status.HTTP_400_BAD_REQUEST)
-            elif 'cpf' in error_message:
-                return Response({
-                    'detail': 'Este CPF já está registrado no sistema.',
-                    'field_errors': {'cpf': ['Este CPF já está em uso.']}
-                }, status=status.HTTP_400_BAD_REQUEST)
-            else:
-                return Response({
-                    'detail': f'Erro de banco de dados: {str(e)}',
-                }, status=status.HTTP_400_BAD_REQUEST)
-        
-        except Exception as e:
-            logger.error(f"Erro inesperado durante registro: {str(e)}")
-            # Tratar qualquer outro erro inesperado
-            return Response({
-                'detail': f'Erro interno do servidor: {str(e)}',
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    serializer = UserSerializer(data=user_payload)
+    if not serializer.is_valid():
+        logger.error(f"Erros no serializer: {serializer.errors}")
+        return Response({'detail':'Dados inválidos.','field_errors':serializer.errors},
+                        status=status.HTTP_400_BAD_REQUEST)
 
-    # Registrar erros de validação para debug
-    logger.error(f"Erros de validação: {serializer.errors}")
-    
-    # Retornar erros de validação do serializer
-    return Response({
-        'detail': 'Dados inválidos fornecidos.',
-        'field_errors': serializer.errors,
-        'debug_info': f'Dados recebidos: {list(request.data.keys())}'
-    }, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        with transaction.atomic():
+            user = serializer.save()
+            logger.info(f"Usuário criado: {user.id}")
+
+            # Criar perfil conforme tipo
+            if user.user_type == 'empresa':
+                if not Empresa.objects.filter(user=user).exists():
+                    nome = data.get('nome_empresa') or data.get('nome') or ''
+                    if not nome:
+                        raise ValueError('nome_empresa/nome obrigatório para empresa')
+                    Empresa.objects.create(user=user, nome=nome, email=user.email)
+                    logger.info(f"Empresa para user {user.id} criada")
+            else:  # candidato
+                if not Candidato.objects.filter(user=user).exists():
+                    nome = data.get('nome_completo') or data.get('nomeCompleto') or data.get('nome') or ''
+                    if not nome:
+                        raise ValueError('nome_completo obrigatório para candidato')
+                    cand_kwargs = {'user':user,'nome_completo':nome,'email':user.email}
+                    if data.get('cpf'): cand_kwargs['cpf']=data['cpf']
+                    Candidato.objects.create(**cand_kwargs)
+                    logger.info(f"Candidato para user {user.id} criado")
+
+            # Gerar tokens
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                'user': UserSerializer(user).data,
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+                'message':'Registro bem-sucedido'
+            }, status=status.HTTP_201_CREATED)
+
+    except ValueError as e:
+        logger.error(f"Validação: {e}")
+        return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except IntegrityError as e:
+        logger.error(f"Integridade: {e}")
+        return Response({'detail':'Erro de banco de dados.'}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception:
+        logger.exception("Erro inesperado no register")
+        return Response({'detail':'Erro interno do servidor.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['POST'])
@@ -246,18 +149,13 @@ def login(request):
 @permission_classes([IsAuthenticated])
 def profile(request):
     user = request.user
-    if user.user_type == 'empresa':
-        try:
-            return Response(EmpresaSerializer(user.empresa).data)
-        except Empresa.DoesNotExist:
-            return Response({'error': 'Perfil de empresa não encontrado'}, status=404)
-    elif user.user_type == 'candidato':
-        try:
-            return Response(CandidatoSerializer(user.candidato).data)
-        except Candidato.DoesNotExist:
-            return Response({'error': 'Perfil de candidato não encontrado'}, status=404)
+    if user.user_type=='empresa':
+        try: return Response(EmpresaSerializer(user.empresa).data)
+        except: return Response({'error':'Empresa não encontrada'},404)
+    if user.user_type=='candidato':
+        try: return Response(CandidatoSerializer(user.candidato).data)
+        except: return Response({'error':'Candidato não encontrado'},404)
     return Response(UserSerializer(user).data)
-
 
 # ==============================================================================
 # VIEWSETS PRINCIPAIS
@@ -439,3 +337,7 @@ def dashboard_stats(request):
         )
     }
     return Response(stats)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_authenticated_user(request):
+    return Response(UserSerializer(request.user).data)

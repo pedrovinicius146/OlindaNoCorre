@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Usuario } from '../models/models/models.component';
+import { authInterceptor } from '../interceptors/auth.interceptor';
 
 @Injectable({
   providedIn: 'root'
@@ -19,20 +20,20 @@ export class AuthService {
   }
 
   login(credentials: { username: string; password: string }): Observable<any> {
-    return this.http.post<{ access: string; refresh: string }>(
-      `${this.apiUrl}/auth/login/`,
-      credentials
-    ).pipe(
-      tap(response => {
-        if (typeof window !== 'undefined' && window.localStorage) {
-          localStorage.setItem('token', response.access);
-          localStorage.setItem('refresh_token', response.refresh);
-        }
-        // atualiza usuário logado
-        this.getCurrentUser().subscribe();
-      })
-    );
-  }
+  return this.http.post<{ access: string; refresh: string; user: Usuario }>(
+    `${this.apiUrl}/auth/login/`,
+    credentials
+  ).pipe(
+    tap(response => {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem('token', response.access);
+        localStorage.setItem('refresh_token', response.refresh);
+        localStorage.setItem('currentUser', JSON.stringify(response.user)); // ✅ salva o usuário
+        this.currentUserSubject.next(response.user); // ✅ atualiza observable
+      }
+    })
+  );
+}
 
   register(userData: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/auth/register/`, userData);

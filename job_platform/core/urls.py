@@ -18,7 +18,9 @@ urlpatterns = [
     path('auth/profile/', views.profile, name='profile'),
     path('auth/password-reset/', views.password_reset_request, name='password_reset'),
     path('auth/password-reset-confirm/', views.password_reset_confirm, name='password_reset_confirm'),
-    
+    path('auth/user/', views.get_authenticated_user, name='get_authenticated_user'),
+
     # APIs do router
     path('', include(router.urls)),
+    path('api', include(router.urls)),
 ]
