@@ -53,7 +53,7 @@ import { HttpClient } from '@angular/common/http';
 
     <div class="mb-6">
       <label class="block text-gray-700 text-sm font-bold mb-2">💸 Expectativa Salarial (R$)</label>
-      <input type="number" formControlName="expectativa_salarial"
+      <input type="number" formControlName="salario_min"
              class="w-full px-3 py-2 border border-gray-300 rounded-md"
              placeholder="0,00">
     </div>
@@ -95,7 +95,7 @@ export class CriarVagaComponent implements OnInit {
       area_atuacao: ['', Validators.required],
       requisitos: ['', Validators.required],
       pergunta_personalizada: ['', Validators.required],
-      expectativa_salarial: ['', [Validators.required, Validators.min(0)]]
+      salario_min: ['', [Validators.required, Validators.min(0)]],
     });
   }
 
@@ -128,7 +128,8 @@ export class CriarVagaComponent implements OnInit {
       formData.append('descricao', formValue.requisitos); // campo correto no backend
       formData.append('area_atuacao', formValue.area_atuacao); // deve ser o ID
       formData.append('pergunta_personalizada', formValue.pergunta_personalizada);
-      formData.append('expectativa_salarial', formValue.expectativa_salarial);
+      formData.append('requisitos', formValue.requisitos); // ⬅️ Adicione esta linha!
+      formData.append('salario_min', formValue.salario_min);
 
       if (this.selectedFile) {
         formData.append('foto_vaga', this.selectedFile);

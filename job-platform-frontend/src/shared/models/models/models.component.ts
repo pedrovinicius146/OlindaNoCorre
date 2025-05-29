@@ -14,6 +14,7 @@ nome_completo: string;
 cpf: string;
 }
 export interface Vaga {
+area_atuacao_nome: any;
 id?: number;
 empresa: number;
 titulo: string;
@@ -25,6 +26,10 @@ area_atuacao: string;
 data_criacao?: string;
 ativa: boolean;
 total_candidaturas?: number;
+ salario_min?: number; // ✅ Adicione esta linha
+  salario_max?: number;
+  salario_a_combinar?: boolean;
+  status: 'aberta' | 'fechada' | 'pausada';
 }
 export interface Candidatura {
 id?: number;

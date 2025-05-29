@@ -44,14 +44,15 @@ transition-shadow">
 </h3>
 <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full
 whitespace-nowrap ml-2">
-{{ vaga.area_atuacao | titlecase }}
+{{ vaga.area_atuacao_nome || 'Área desconhecida' }}
+
 </span>
 </div>
 <p class="text-gray-600 text-sm mb-3 line-clamp-3">
 {{ vaga.requisitos }}
 </p>
 <div class="flex justify-between items-center text-sm text-gray-500 mb-3">
-<span>💰 R$ {{ vaga.expectativa_salarial | number:'1.2-2' }}</span>
+<span>💰 R$ {{ vaga.salario_min | number:'1.2-2' }}</span>
 <span>📅 {{ vaga.data_criacao | date:'dd/MM/yyyy' }}</span>
 </div>
 <div class="flex justify-between items-center">
@@ -62,7 +63,11 @@ whitespace-nowrap ml-2">
 <span [class]="vaga.ativa ? 'bg-green-100 text-green-800' : 'bg-red-100
 text-red-800'"
 class="text-xs px-2 py-1 rounded-full">
-{{ vaga.ativa ? '✅ Ativa' : '❌ Inativa' }}
+<span [class]="vaga.status === 'aberta' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+      class="text-xs px-2 py-1 rounded-full">
+  {{ vaga.status === 'aberta' ? '✅ Ativa' : (vaga.status === 'fechada' ? '❌ Fechada' : '⏸️ Pausada') }}
+</span>
+
 </span>
 </div>
 <button class="text-blue-600 hover:text-blue-800 text-sm font-medium">
