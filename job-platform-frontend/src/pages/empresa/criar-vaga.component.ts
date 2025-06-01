@@ -9,72 +9,65 @@ import { HttpClient } from '@angular/common/http';
   selector: 'app-criar-vaga',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
+  styleUrls: ['./criar-vaga.component.css'],
   template: `
-<div class="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-6">
-  <h2 class="text-2xl font-bold mb-6">📋 Criar Nova Vaga</h2>
+  <div class="criar-vaga-container">
+    <div class="criar-vaga-card">
+      <h2 class="page-title">📋 Criar Nova Vaga</h2>
 
-  <form [formGroup]="vagaForm" (ngSubmit)="onSubmit()">
-    <div class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2">📷 Foto da Vaga</label>
-      <input type="file" (change)="onFileSelect($event)" accept="image/*"
-             class="w-full px-3 py-2 border border-gray-300 rounded-md">
-    </div>
+      <form [formGroup]="vagaForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label class="form-label">📷 Foto da Vaga</label>
+          <input type="file" (change)="onFileSelect($event)" accept="image/*" class="form-input" />
+        </div>
 
-    <div class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2">📋 Nome da Vaga</label>
-      <input type="text" formControlName="titulo"
-             class="w-full px-3 py-2 border border-gray-300 rounded-md">
-    </div>
+        <div class="form-group">
+          <label class="form-label">📋 Nome da Vaga</label>
+          <input type="text" formControlName="titulo" class="form-input" />
+        </div>
 
-    <div class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2">🏢 Área de Atuação</label>
-      <select formControlName="area_atuacao"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md">
-        <option value="">Selecione...</option>
-        <option *ngFor="let area of areasAtuacao" [value]="area.id">
-          {{ area.nome }}
-        </option>
-      </select>
-    </div>
+        <div class="form-group">
+          <label class="form-label">🏢 Área de Atuação</label>
+          <select formControlName="area_atuacao" class="form-select">
+            <option value="">Selecione...</option>
+            <option *ngFor="let area of areasAtuacao" [value]="area.id">
+              {{ area.nome }}
+            </option>
+          </select>
+        </div>
 
-    <div class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2">🧾 Requisitos da Vaga</label>
-      <textarea formControlName="requisitos" rows="4"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md"
-                placeholder="Descreva os requisitos necessários para a vaga..."></textarea>
-    </div>
+        <div class="form-group">
+          <label class="form-label">🧾 Requisitos da Vaga</label>
+          <textarea formControlName="requisitos" class="form-textarea" placeholder="Descreva os requisitos necessários para a vaga..."></textarea>
+        </div>
 
-    <div class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2">💬 Pergunta Personalizada para o Candidato</label>
-      <input type="text" formControlName="pergunta_personalizada"
-             class="w-full px-3 py-2 border border-gray-300 rounded-md"
-             placeholder="Ex: Por que você se interessou por esta vaga?">
-    </div>
+        <div class="form-group">
+          <label class="form-label">💬 Pergunta Personalizada</label>
+          <input type="text" formControlName="pergunta_personalizada" class="form-input" placeholder="Ex: Por que você se interessou por esta vaga?" />
+        </div>
 
-    <div class="mb-6">
-      <label class="block text-gray-700 text-sm font-bold mb-2">💸 Expectativa Salarial (R$)</label>
-      <input type="number" formControlName="salario_min"
-             class="w-full px-3 py-2 border border-gray-300 rounded-md"
-             placeholder="0,00">
-    </div>
+        <div class="form-group salary-input-group">
+          <label class="form-label">💸 Expectativa Salarial</label>
+          <input type="number" formControlName="salario_min" class="form-input salary-input" placeholder="0,00" />
+        </div>
 
-    <div *ngIf="error" class="text-red-500 text-sm mb-4">
-      {{ error }}
-    </div>
+        <div *ngIf="error" class="error-message">
+          {{ error }}
+        </div>
 
-    <div class="flex space-x-4">
-      <button type="submit" [disabled]="vagaForm.invalid || loading"
-              class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50">
-        <span *ngIf="loading">Criando...</span>
-        <span *ngIf="!loading">📤 Criar Vaga</span>
-      </button>
-      <button type="button" (click)="cancelar()"
-              class="flex-1 bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600">
-        Cancelar
-      </button>
+        <div class="button-group">
+          <button type="submit" [disabled]="vagaForm.invalid || loading" class="btn-primary">
+            <span *ngIf="loading" class="loading-spinner"></span>
+            <span *ngIf="!loading">📤 Criar Vaga</span>
+          </button>
+
+          <button type="button" (click)="cancelar()" class="btn-secondary">
+            Cancelar
+          </button>
+        </div>
+      </form>
     </div>
-  </form>
-</div>
+  </div>
 `
 })
 export class CriarVagaComponent implements OnInit {

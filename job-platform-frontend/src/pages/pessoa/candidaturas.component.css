@@ -1,0 +1,131 @@
+ /* Container */
+      .candidaturas-container {
+        max-width: 72rem; /* equivalent to max-w-6xl */
+        margin: 0 auto;
+        padding: 2rem 1rem;
+      }
+
+      /* Title */
+      .candidaturas-title {
+        font-size: 1.875rem; /* text-2xl */
+        font-weight: 700;
+        color: #1f2937; /* gray-800 */
+        margin-bottom: 1.5rem;
+      }
+
+      /* Loading */
+      .candidaturas-loading {
+        text-align: center;
+        padding: 2rem 0;
+        color: #4b5563; /* gray-600 */
+      }
+
+      /* Empty State */
+      .candidaturas-empty {
+        text-align: center;
+        padding: 2rem 0;
+        color: #6b7280; /* gray-500 */
+      }
+
+      /* List spacing */
+      .candidaturas-list > * + * {
+        margin-top: 1.5rem; /* space-y-6 */
+      }
+
+      /* Card */
+      .candidatura-card {
+        background: #ffffff;
+        border-radius: 0.5rem; /* rounded-lg */
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-md */
+        padding: 1.5rem; /* p-6 */
+        transition: box-shadow 0.2s ease;
+      }
+
+      .candidatura-card:hover {
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04); /* hover:shadow-lg */
+      }
+
+      /* Header */
+      .candidatura-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.5rem;
+      }
+
+      .candidatura-vaga-title {
+        font-size: 1.25rem; /* text-xl */
+        font-weight: 600;
+        color: #1f2937; /* gray-900 */
+        margin-bottom: 0.25rem;
+      }
+
+      .candidatura-vaga-empresa {
+        font-size: 0.875rem; /* text-sm */
+        color: #4b5563; /* gray-600 */
+      }
+
+      /* Status Badge */
+      .candidatura-status {
+        font-size: 0.75rem; /* text-xs */
+        padding: 0.25rem 0.5rem; /* px-2 py-1 */
+        border-radius: 9999px; /* rounded-full */
+        white-space: nowrap;
+      }
+      .status-aguardando {
+        background: #fef3c7; /* yellow-100 */
+        color: #92400e; /* yellow-800 */
+      }
+      .status-analise {
+        background: #dbeafe; /* blue-100 */
+        color: #1e40af; /* blue-800 */
+      }
+      .status-selecionado {
+        background: #d1fae5; /* green-100 */
+        color: #065f46; /* green-800 */
+      }
+      .status-rejeitado {
+        background: #fee2e2; /* red-100 */
+        color: #991b1b; /* red-800 */
+      }
+      .status-contratado {
+        background: #ede9fe; /* purple-100 */
+        color: #5b21b6; /* purple-800 */
+      }
+
+      /* Response Section */
+      .candidatura-response {
+        margin-bottom: 1rem;
+      }
+      .candidatura-subtitle {
+        font-weight: 500;
+        color: #374151; /* gray-700 */
+        margin-bottom: 0.25rem;
+      }
+      .candidatura-text {
+        color: #4b5563; /* gray-600 */
+        font-size: 0.875rem; /* text-sm */
+      }
+
+      /* Documents Section */
+      .candidatura-doc {
+        margin-bottom: 0.75rem;
+        font-size: 0.875rem; /* text-sm */
+        color: #4b5563; /* gray-600 */
+      }
+      .candidatura-link {
+        color: #3b82f6; /* blue-600 */
+        text-decoration: none;
+      }
+      .candidatura-link:hover {
+        text-decoration: underline;
+      }
+
+      /* Responsive Adjustments */
+      @media (max-width: 640px) {
+        .candidaturas-container {
+          padding: 1rem;
+        }
+      }

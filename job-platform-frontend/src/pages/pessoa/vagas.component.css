@@ -1,0 +1,338 @@
+/* Estilos para VagasComponent */
+
+/* Container Principal */
+.vagas-container {
+  max-width: 72rem; /* aproximadamente max-w-6xl */
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+/* Título */
+.vagas-title {
+  font-size: 1.5rem; /* text-2xl */
+  font-weight: 700;
+  color: #1a202c; /* gray-900 */
+  margin-bottom: 1.5rem;
+}
+
+/* Card de Filtros */
+.filtros-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 0.5rem; /* rounded-lg */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  padding: 1rem; /* p-4 */
+  margin-bottom: 1.5rem; /* mb-6 */
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Grid de Campos de Filtro */
+.filtros-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem; /* gap-4 */
+  align-items: flex-end;
+}
+
+/* Grupo de Campo */
+.form-group {
+  flex: 1;
+  min-width: 12rem; /* min-w-48 */
+}
+
+/* Rótulo do Campo */
+.form-label {
+  display: block;
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 600;
+  color: #4a5568; /* gray-700 */
+  margin-bottom: 0.25rem; /* mb-2 */
+}
+
+/* Select e Input de Filtro */
+.form-select,
+.form-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem; /* px-3 py-2 */
+  border: 2px solid #e2e8f0; /* gray-200 */
+  border-radius: 0.375rem; /* rounded-md */
+  font-size: 1rem;
+  background: white;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.form-select:focus,
+.form-input:focus {
+  outline: none;
+  border-color: #667eea; /* blue-500 */
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+.form-select:hover,
+.form-input:hover {
+  border-color: #cbd5e0; /* gray-300 */
+}
+
+/* Botões de Filtro e Limpar */
+.btn-filtro,
+.btn-limpar {
+  padding: 0.5rem 1rem; /* px-4 py-2 */
+  border: none;
+  border-radius: 0.375rem; /* rounded-md */
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+.btn-filtro {
+  background: #3182ce; /* blue-600 */
+}
+.btn-filtro:hover:not(:disabled) {
+  background: #2b6cb0; /* blue-700 */
+}
+.btn-limpar {
+  background: #4a5568; /* gray-600 */
+}
+.btn-limpar:hover:not(:disabled) {
+  background: #2d3748; /* gray-800 */
+}
+.btn-filtro:disabled,
+.btn-limpar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Mensagem de Carregamento ou Sem Resultados */
+.loading-text,
+.no-results {
+  text-align: center;
+  padding: 2rem 0;
+  font-size: 1rem;
+  color: #718096; /* gray-500 */
+}
+
+/* Grid de Cartões de Vaga */
+.vagas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr)); /* grid-cols-1 md:grid-cols-2 lg:grid-cols-3 */
+  gap: 1.5rem; /* gap-6 */
+}
+
+/* Card de Vaga */
+.vaga-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 0.5rem; /* rounded-lg */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: box-shadow 0.2s ease;
+}
+.vaga-card:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Imagem da Vaga */
+.vaga-image-wrapper {
+  height: 12rem; /* h-48 */
+  background: #e2e8f0; /* gray-200 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.vaga-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Conteúdo da Vaga */
+.vaga-content {
+  padding: 1rem; /* p-4 */
+}
+.vaga-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem; /* mb-2 */
+}
+.vaga-title {
+  font-size: 1.125rem; /* text-lg */
+  font-weight: 600;
+  color: #1a202c; /* gray-900 */
+}
+.vaga-badge {
+  background: #ebf8ff; /* blue-100 */
+  color: #2c5282; /* blue-800 */
+  font-size: 0.75rem; /* text-xs */
+  padding: 0.25rem 0.5rem; /* px-2 py-1 */
+  border-radius: 9999px; /* rounded-full */
+}
+.vaga-desc {
+  font-size: 0.875rem; /* text-sm */
+  color: #4a5568; /* gray-600 */
+  margin-bottom: 0.75rem; /* mb-3 */
+}
+.vaga-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem; /* text-sm */
+  color: #718096; /* gray-500 */
+  margin-bottom: 1rem; /* mb-4 */
+}
+
+/* Botão de Candidatar-se */
+.btn-candidatar {
+  width: 100%;
+  background: #38a169; /* green-600 */
+  color: white;
+  padding: 0.5rem 1rem; /* py-2 px-4 */
+  border: none;
+  border-radius: 0.375rem; /* rounded-md */
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+.btn-candidatar:hover:not(:disabled) {
+  background: #2f855a; /* green-700 */
+}
+.btn-candidatar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Overlay e Modal de Candidatura */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+.modal-content {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 0.5rem; /* rounded-lg */
+  padding: 1.5rem; /* p-6 */
+  width: 100%;
+  max-width: 24rem; /* max-w-md */
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Cabeçalho do Modal */
+.modal-header {
+  font-size: 1.125rem; /* text-xl */
+  font-weight: 600;
+  margin-bottom: 1rem; /* mb-4 */
+}
+
+/* Grupo de Campo no Modal */
+.modal-form-group {
+  margin-bottom: 1rem; /* mb-4 */
+}
+.modal-form-label {
+  display: block;
+  font-size: 0.875rem; /* text-sm */
+  color: #4a5568; /* gray-700 */
+  margin-bottom: 0.25rem; /* mb-2 */
+}
+.modal-form-input,
+.modal-form-textarea {
+  width: 100%;
+  padding: 0.5rem 0.75rem; /* px-3 py-2 */
+  border: 2px solid #e2e8f0; /* gray-200 */
+  border-radius: 0.375rem; /* rounded-md */
+  font-size: 1rem;
+  background: white;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.modal-form-input:focus,
+.modal-form-textarea:focus {
+  outline: none;
+  border-color: #667eea; /* blue-500 */
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+.modal-form-input:hover,
+.modal-form-textarea:hover {
+  border-color: #cbd5e0; /* gray-300 */
+}
+
+/* Mensagem de Erro no Modal */
+.modal-error {
+  color: #e53e3e; /* red-500 */
+  font-size: 0.875rem; /* text-sm */
+  margin-bottom: 1rem; /* mb-4 */
+}
+
+/* Botões do Modal */
+.modal-btn {
+  flex: 1;
+  padding: 0.5rem 0; /* py-2 */
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 600;
+  border: none;
+  border-radius: 0.375rem; /* rounded-md */
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+.modal-btn + .modal-btn {
+  margin-left: 0.5rem; /* space-x-2 equivale a gap entre botões */
+}
+.modal-btn-enviar {
+  background: #38a169; /* green-600 */
+  color: white;
+}
+.modal-btn-enviar:hover:not(:disabled) {
+  background: #2f855a; /* green-700 */
+}
+.modal-btn-cancelar {
+  background: #4a5568; /* gray-600 */
+  color: white;
+}
+.modal-btn-cancelar:hover:not(:disabled) {
+  background: #2d3748; /* gray-800 */
+}
+.modal-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Input de Arquivo no Modal */
+.modal-file-input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 2px dashed #e2e8f0; /* gray-200 */
+  border-radius: 0.375rem; /* rounded-md */
+  background: rgba(249, 250, 251, 0.8);
+  text-align: center;
+  font-size: 0.875rem; /* text-sm */
+  color: #718096; /* gray-500 */
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.modal-file-input:hover {
+  border-color: #667eea; /* blue-500 */
+  background: rgba(102, 126, 234, 0.05);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .vagas-container {
+    padding: 0 0.5rem;
+  }
+  .vagas-title {
+    font-size: 1.25rem;
+  }
+  .vagas-grid {
+    grid-template-columns: 1fr 1fr; /* md:grid-cols-2 */
+  }
+}
+@media (max-width: 480px) {
+  .vagas-grid {
+    grid-template-columns: 1fr; /* grid-cols-1 */
+  }
+  .modal-content {
+    margin: 0 1rem;
+    width: calc(100% - 2rem);
+  }
+}

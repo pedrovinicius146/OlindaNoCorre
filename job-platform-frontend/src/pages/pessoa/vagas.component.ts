@@ -14,21 +14,22 @@ import { Vaga, AreaAtuacao, Candidatura } from '../../shared/models/models/model
   selector: 'app-vagas',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
+  styleUrls: ['./vagas.component.css'],
   template: `
-    <div class="max-w-6xl mx-auto">
-      <h2 class="text-2xl font-bold mb-6">🔍 Vagas Disponíveis</h2>
+     <div class="vagas-container">
+      <h2 class="vagas-title">🔍 Vagas Disponíveis</h2>
 
       <!-- Filtros -->
-      <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+      <div class="filtros-card">
         <form [formGroup]="filtroForm" (ngSubmit)="aplicarFiltros()">
-          <div class="flex flex-wrap gap-4 items-end">
+          <div class="filtros-form">
             <!-- Área de Atuação -->
-            <div class="flex-1 min-w-48">
-              <label class="block text-gray-700 text-sm font-bold mb-2">
-                🏢 Área de Atuação
-              </label>
-              <select formControlName="area_atuacao"
-                      class="w-full px-3 py-2 border rounded-md">
+            <div class="form-group">
+              <label class="form-label">🏢 Área de Atuação</label>
+              <select
+                formControlName="area_atuacao"
+                class="form-select"
+              >
                 <option value="">Todas as áreas</option>
                 <option *ngFor="let area of areasAtuacao" [value]="area.id">
                   {{ area.nome | titlecase }}
@@ -37,21 +38,18 @@ import { Vaga, AreaAtuacao, Candidatura } from '../../shared/models/models/model
             </div>
 
             <!-- Salário mínimo -->
-            <div class="flex-1 min-w-48">
-              <label class="block text-gray-700 text-sm font-bold mb-2">
-                💰 Salário Mínimo
-              </label>
-              <input type="number" formControlName="salario_minimo"
-                     class="w-full px-3 py-2 border rounded-md"
-                     placeholder="0,00" />
+            <div class="form-group">
+              <label class="form-label">💰 Salário Mínimo</label>
+              <input
+                type="number"
+                formControlName="salario_minimo"
+                class="form-input"
+                placeholder="0,00"
+              />
             </div>
 
-            <button type="submit"
-                    class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
-              🔍 Filtrar
-            </button>
-            <button type="button" (click)="limparFiltros()"
-                    class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600">
+            <button type="submit" class="btn-filtro">🔍 Filtrar</button>
+            <button type="button" (click)="limparFiltros()" class="btn-limpar">
               🗑 Limpar
             </button>
           </div>
@@ -59,46 +57,48 @@ import { Vaga, AreaAtuacao, Candidatura } from '../../shared/models/models/model
       </div>
 
       <!-- Loading -->
-      <div *ngIf="loading" class="text-center py-8">
+      <div *ngIf="loading" class="loading-text">
         Carregando vagas...
       </div>
 
       <!-- Sem resultados -->
-      <div *ngIf="!loading && vagas.length === 0"
-           class="text-center py-8 text-gray-500">
+      <div *ngIf="!loading && vagas.length === 0" class="no-results">
         Nenhuma vaga encontrada com os filtros aplicados.
       </div>
 
       <!-- Lista de Vagas -->
-      <div *ngIf="!loading && vagas.length > 0"
-           class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div *ngFor="let vaga of vagas"
-             class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-          
-          <div class="h-48 bg-gray-200 flex items-center justify-center">
-            <img *ngIf="vaga.foto_vaga" [src]="vaga.foto_vaga"
-                 [alt]="vaga.titulo" class="w-full h-full object-cover" />
+      <div *ngIf="!loading && vagas.length > 0" class="vagas-grid">
+        <div *ngFor="let vaga of vagas" class="vaga-card">
+          <div class="vaga-image-wrapper">
+            <img
+              *ngIf="vaga.foto_vaga"
+              [src]="vaga.foto_vaga"
+              [alt]="vaga.titulo"
+              class="vaga-image"
+            />
             <div *ngIf="!vaga.foto_vaga" class="text-gray-400">
               📷 Sem foto
             </div>
           </div>
-          
-          <div class="p-4">
-            <div class="flex justify-between items-start mb-2">
-              <h3 class="text-lg font-semibold">{{ vaga.titulo }}</h3>
-              <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+
+          <div class="vaga-content">
+            <div class="vaga-header">
+              <h3 class="vaga-title">{{ vaga.titulo }}</h3>
+              <span class="vaga-badge">
                 {{ vaga.area_atuacao_nome | titlecase }}
               </span>
             </div>
-            
-            <p class="text-gray-600 text-sm mb-3">{{ vaga.requisitos }}</p>
-            
-            <div class="flex justify-between items-center text-sm text-gray-500 mb-4">
+
+            <p class="vaga-desc">{{ vaga.requisitos }}</p>
+
+            <div class="vaga-info">
               <span>💰 R$ {{ vaga.salario_min | number:'1.2-2' }}</span>
             </div>
-            
-            <button (click)="abrirModalCandidatura(vaga)"
-                    class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">
+
+            <button
+              (click)="abrirModalCandidatura(vaga)"
+              class="btn-candidatar"
+            >
               📝 Candidatar-se
             </button>
           </div>
@@ -107,44 +107,55 @@ import { Vaga, AreaAtuacao, Candidatura } from '../../shared/models/models/model
     </div>
 
     <!-- Modal de Candidatura -->
-    <div *ngIf="modalAberto"
-         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white rounded-lg p-6 w-full max-w-md">
-        <h3 class="text-xl font-bold mb-4">Candidatar-se à vaga</h3>
-        
-        <div class="mb-4">
+    <div *ngIf="modalAberto" class="modal-overlay">
+      <div class="modal-content">
+        <h3 class="modal-header">Candidatar-se à vaga</h3>
+
+        <div class="modal-form-group mb-4">
           <strong>{{ vagaSelecionada?.titulo }}</strong><br />
           <small>{{ vagaSelecionada?.area_atuacao_nome | titlecase }}</small>
         </div>
-        
+
         <form [formGroup]="candidaturaForm" (ngSubmit)="enviarCandidatura()">
-          <div class="mb-4">
-            <label class="block text-gray-700 mb-2">
+          <div class="modal-form-group">
+            <label class="modal-form-label">
               {{ vagaSelecionada?.pergunta_personalizada }}
             </label>
-            <textarea formControlName="resposta_pergunta" rows="3"
-                      class="w-full px-3 py-2 border rounded-md"
-                      placeholder="Sua resposta"></textarea>
+            <textarea
+              formControlName="resposta_pergunta"
+              rows="3"
+              class="modal-form-textarea"
+              placeholder="Sua resposta"
+            ></textarea>
           </div>
-          
-          <div class="mb-4">
-            <label class="block text-gray-700 mb-2">📎 Currículo (PDF)</label>
-            <input type="file" (change)="onCurriculoSelect($event)" accept=".pdf"
-                   class="w-full" />
+
+          <div class="modal-form-group">
+            <label class="modal-form-label">📎 Currículo (PDF)</label>
+            <input
+              type="file"
+              (change)="onCurriculoSelect($event)"
+              accept=".pdf"
+              class="modal-file-input"
+            />
           </div>
-          
-          <div *ngIf="erroCandidatura" class="text-red-500 mb-4">
+
+          <div *ngIf="erroCandidatura" class="modal-error">
             {{ erroCandidatura }}
           </div>
-          
+
           <div class="flex space-x-2">
-            <button type="submit"
-                    [disabled]="candidaturaForm.invalid || carregandoCandidatura"
-                    class="flex-1 bg-green-600 text-white py-2 rounded-md hover:bg-green-700">
+            <button
+              type="submit"
+              [disabled]="candidaturaForm.invalid || carregandoCandidatura"
+              class="modal-btn modal-btn-enviar"
+            >
               {{ carregandoCandidatura ? 'Enviando...' : 'Enviar' }}
             </button>
-            <button type="button" (click)="fecharModal()"
-                    class="flex-1 bg-gray-500 text-white py-2 rounded-md hover:bg-gray-600">
+            <button
+              type="button"
+              (click)="fecharModal()"
+              class="modal-btn modal-btn-cancelar"
+            >
               Cancelar
             </button>
           </div>

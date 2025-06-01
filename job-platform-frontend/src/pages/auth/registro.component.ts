@@ -8,79 +8,81 @@ import { AuthService } from '../../shared/services/auth.service';
   selector: 'app-registro',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  styleUrls: ['./registro.component.css'],
   template: `
-  <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
-    <h2 class="text-2xl font-bold text-center mb-6">Criar Conta</h2>
+   <div class="registro-container">
+      <div class="registro-card">
+        <h2 class="registro-title">Criar Conta</h2>
 
-    <div class="mb-4">
-      <label class="block text-gray-700 text-sm font-bold mb-2">Tipo de Usuário</label>
-      <select (change)="onTipoUsuarioChange($event)" class="w-full px-3 py-2 border border-gray-300 rounded-md">
-        <option value="">Selecione...</option>
-        <option value="candidato">Candidato</option>
-        <option value="empresa">Empresa</option>
-      </select>
+        <div class="user-type-selector">
+          <label class="user-type-label">Tipo de Usuário</label>
+          <select (change)="onTipoUsuarioChange($event)" class="user-type-select">
+            <option value="">Selecione...</option>
+            <option value="candidato">Candidato</option>
+            <option value="empresa">Empresa</option>
+          </select>
+        </div>
+
+        <form [formGroup]="registroForm" (ngSubmit)="onSubmit()" *ngIf="tipoUsuario" class="form-section">
+          <div class="form-group">
+            <label class="form-label">Usuário</label>
+            <input type="text" formControlName="username" class="form-input" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">E-mail</label>
+            <input type="email" formControlName="email" class="form-input" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Senha</label>
+            <input type="password" formControlName="password" class="form-input" />
+          </div>
+
+          <!-- Candidato -->
+          <div *ngIf="tipoUsuario === 'candidato'" class="candidato-section">
+            <div class="form-group">
+              <label class="form-label">Nome Completo</label>
+              <input type="text" formControlName="nome_completo" class="form-input" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">CPF</label>
+              <input type="text" formControlName="cpf" class="form-input" />
+            </div>
+          </div>
+
+          <!-- Empresa -->
+          <div *ngIf="tipoUsuario === 'empresa'" class="empresa-section">
+            <div class="form-group">
+              <label class="form-label">Nome da Empresa</label>
+              <input type="text" formControlName="nome_empresa" class="form-input" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">CNPJ</label>
+              <input type="text" formControlName="cnpj" class="form-input" />
+            </div>
+          </div>
+
+          <div class="form-group file-input-wrapper">
+            <label class="form-label">Foto de Perfil</label>
+            <input type="file" (change)="onFileSelect($event)" accept="image/*" class="file-input" />
+          </div>
+
+          <div *ngIf="error" class="error-message">{{ error }}</div>
+
+          <button type="submit" [disabled]="registroForm.invalid || loading" class="registro-button">
+            <span *ngIf="loading">Carregando...</span>
+            <span *ngIf="!loading">Criar Conta</span>
+          </button>
+        </form>
+
+        <div class="login-link">
+          <a routerLink="/login">Já tem conta? Faça login</a>
+        </div>
+      </div>
     </div>
-
-    <form [formGroup]="registroForm" (ngSubmit)="onSubmit()" *ngIf="tipoUsuario">
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2">Usuário</label>
-        <input type="text" formControlName="username" class="w-full px-3 py-2 border border-gray-300 rounded-md">
-      </div>
-
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2">E-mail</label>
-        <input type="email" formControlName="email" class="w-full px-3 py-2 border border-gray-300 rounded-md">
-      </div>
-
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2">Senha</label>
-        <input type="password" formControlName="password" class="w-full px-3 py-2 border border-gray-300 rounded-md">
-      </div>
-
-      <!-- Candidato -->
-      <div *ngIf="tipoUsuario === 'candidato'">
-        <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-bold mb-2">Nome Completo</label>
-          <input type="text" formControlName="nome_completo" class="w-full px-3 py-2 border border-gray-300 rounded-md">
-        </div>
-
-        <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-bold mb-2">CPF</label>
-          <input type="text" formControlName="cpf" class="w-full px-3 py-2 border border-gray-300 rounded-md">
-        </div>
-      </div>
-
-      <!-- Empresa -->
-      <div *ngIf="tipoUsuario === 'empresa'">
-        <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-bold mb-2">Nome da Empresa</label>
-          <input type="text" formControlName="nome_empresa" class="w-full px-3 py-2 border border-gray-300 rounded-md">
-        </div>
-
-        <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-bold mb-2">CNPJ</label>
-          <input type="text" formControlName="cnpj" class="w-full px-3 py-2 border border-gray-300 rounded-md">
-        </div>
-      </div>
-
-      <div class="mb-4">
-        <label class="block text-gray-700 text-sm font-bold mb-2">Foto de Perfil</label>
-        <input type="file" (change)="onFileSelect($event)" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-md">
-      </div>
-
-      <div *ngIf="error" class="text-red-500 text-sm mb-4">{{ error }}</div>
-
-      <button type="submit" [disabled]="registroForm.invalid || loading"
-              class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 disabled:opacity-50">
-        <span *ngIf="loading">Carregando...</span>
-        <span *ngIf="!loading">Criar Conta</span>
-      </button>
-    </form>
-
-    <div class="text-center mt-4">
-      <a routerLink="/login" class="text-blue-600 hover:text-blue-800">Já tem conta? Faça login</a>
-    </div>
-  </div>
   `
 })
 export class RegistroComponent {
