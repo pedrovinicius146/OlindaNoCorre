@@ -41,7 +41,7 @@ canActivate: [AuthGuard]
 path: 'pessoa/candidaturas',
 loadComponent: () =>
 import('../pages/pessoa/candidaturas.component').then(m =>
-m.CandidaturasComponent),
+m.PessoaCandidaturasComponent),
 canActivate: [AuthGuard]
 }
 ];
