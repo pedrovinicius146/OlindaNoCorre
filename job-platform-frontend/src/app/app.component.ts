@@ -15,5 +15,5 @@ template: `
 `
 })
 export class AppComponent {
-title = 'job-platform';
+title = 'OlindaNoCorre';
 }

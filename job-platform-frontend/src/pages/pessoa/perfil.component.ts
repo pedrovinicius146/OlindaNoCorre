@@ -14,29 +14,30 @@ template: `
       <h2 class="perfil-title">👤 Meu Perfil</h2>
 
       <!-- Cabeçalho com foto e informações -->
-      <div class="perfil-header" *ngIf="currentUser">
-        <div class="perfil-avatar">
-          <img
-            *ngIf="currentUser.foto_perfil"
-            [src]="currentUser.foto_perfil"
-            alt="Foto de perfil"
-          />
-          <span
-            *ngIf="!currentUser.foto_perfil"
-            class="placeholder-icon"
-            >👤</span
-          >
-        </div>
-        <div class="perfil-userinfo">
-          <h3>{{ currentUser.username }}</h3>
-          <p>{{ currentUser.email }}</p>
-          <span class="perfil-badge">
-            {{ currentUser.tipo_usuario === 'candidato'
-              ? 'Candidato'
-              : 'Empresa' }}
-          </span>
-        </div>
-      </div>
+      <!-- Cabeçalho com foto e informações -->
+<div class="perfil-header" *ngIf="currentUser">
+  <div class="perfil-avatar">
+    <img
+      *ngIf="currentUser.foto_perfil"
+      [src]="currentUser.foto_perfil"
+      alt="Foto de perfil"
+      class="object-cover"
+    />
+    <span
+      *ngIf="!currentUser.foto_perfil"
+      class="placeholder-icon"
+      >👤</span
+    >
+  </div>
+  <div class="perfil-userinfo">
+    <h3>{{ currentUser.username }}</h3>
+    <p>{{ currentUser.email }}</p>
+    <span class="perfil-badge">
+      {{ currentUser.tipo_usuario === 'candidato' ? 'Candidato' : 'Empresa' }}
+    </span>
+  </div>
+</div>
+
 
       <!-- Formulário de Edição -->
       <form
