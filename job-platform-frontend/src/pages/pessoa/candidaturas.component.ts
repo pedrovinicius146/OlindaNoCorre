@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { VagaService } from '../../shared/services/vaga.service';
 import { Candidatura } from '../../shared/models/models/models.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-pessoa-candidaturas',
@@ -65,9 +66,10 @@ import { Candidatura } from '../../shared/models/models/models.component';
             📝 Carta de apresentação:
             <span class="candidatura-text">{{ cand.carta_apresentacao }}</span>
           </div>
+          
         </div>
       </div>
-    </div>
+    </div><button (click)="goToEmpresaVagas()" class="btn-primary">Voltar</button>
   `,
   styles: [
     `
@@ -82,20 +84,12 @@ export class PessoaCandidaturasComponent implements OnInit {
   candidaturas: Candidatura[] = [];
   loading = false;
 
-  constructor(private vagaService: VagaService) {}
+  constructor(private vagaService: VagaService, private router: Router) {}
 
   ngOnInit() {
     this.loading = true;
-
-    // Chama API de Candidaturas (paginada):
     this.vagaService.listarCandidaturas().subscribe({
-      next: (res: {
-        count: number;
-        next: string | null;
-        previous: string | null;
-        results: Candidatura[];
-      }) => {
-        // Atribui apenas o array de resultados
+      next: (res: { count: number; next: string | null; previous: string | null; results: Candidatura[] }) => {
         this.candidaturas = res.results || [];
         this.loading = false;
       },
@@ -107,9 +101,6 @@ export class PessoaCandidaturasComponent implements OnInit {
     });
   }
 
-  /**
-   * Retorna texto amigável para o status da candidatura
-   */
   statusText(status: string): string {
     switch (status) {
       case 'aguardando':
@@ -125,5 +116,13 @@ export class PessoaCandidaturasComponent implements OnInit {
       default:
         return status;
     }
+  }
+
+  goToEmpresaVagas() {
+    this.router.navigate(['empresa/vagas-em-aberto']);
+  }
+
+  goToPessoaVagas() {
+    this.router.navigate(['pessoa/vagas']);
   }
 }

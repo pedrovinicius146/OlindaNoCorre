@@ -5,23 +5,14 @@
   max-width: 80rem;
   margin: 0 auto;
   padding: 2rem 1rem;
+  position: relative; /* necessário para posicionar botões absolutos */
 }
 
-/* Header */
-.vagas-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-.vagas-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #2d3748;
-}
-
+/* Botão “Novo Vaga” – fixo abaixo do “Perfil” */
 .vagas-button {
+  position: absolute;
+  top: 4rem;       /* 1rem (perfil) + 3rem de distância */
+  right: 1rem;     /* alinhado com o perfil à direita */
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   padding: 0.5rem 1rem;
@@ -31,10 +22,48 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  z-index: 9;
 }
 
-.vagas-button:hover {
+.vagas-button:hover:not(:disabled) {
   background: #5a67d8;
+}
+
+/* Botão “👤 Meu Perfil Pessoa” – fixo no topo */
+.vagas-btn-canto {
+  position: absolute;
+  top: 1rem;       /* alinhado com o padding superior do container */
+  right: 1rem;     /* distância da borda direita */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;     /* acima do “Novo Vaga” */
+}
+
+.vagas-btn-canto:hover:not(:disabled) {
+  background: #5a67d8;
+}
+
+/* Header */
+.vagas-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  /* mantém espaço para os botões fixos */
+  padding-top: 6rem;
+}
+
+.vagas-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2d3748;
 }
 
 /* Loading & Empty States */
@@ -189,6 +218,67 @@
   transition: color 0.2s ease;
 }
 
-.vaga-details-button:hover {
+.vaga-details-button:hover:not(:disabled) {
   color: #2b6cb0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .vagas-container {
+    padding: 1rem 0.5rem;
+  }
+
+  .vagas-header {
+    padding-top: 8rem; /* aumenta espaço superior em telas médias */
+  }
+
+  .vagas-btn-canto {
+    top: 0.75rem;
+    right: 0.75rem;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.8rem;
+  }
+
+  .vagas-button {
+    top: 3.5rem;
+    right: 0.75rem;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.8rem;
+  }
+
+  .vagas-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .vagas-header {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding-top: 10rem; /* garante espaço suficiente no topo */
+  }
+
+  .vagas-title {
+    font-size: 1.25rem;
+    text-align: center;
+  }
+
+  .vagas-btn-canto {
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  .vagas-button {
+    top: 3rem;
+    right: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  .vagas-grid {
+    grid-template-columns: 1fr;
+  }
 }

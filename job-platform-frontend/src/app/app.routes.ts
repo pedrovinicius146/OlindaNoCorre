@@ -1,6 +1,7 @@
 
 import { Routes } from '@angular/router';
 import { AuthGuard } from '../shared/guards/auth.guard';
+import { EscolherPerfilComponent } from '../pages/escolher-perfil/escolher-perfil.component';
 export const routes: Routes = [
 { path: '', redirectTo: '/login', pathMatch: 'full' },
 {
@@ -43,5 +44,9 @@ loadComponent: () =>
 import('../pages/pessoa/candidaturas.component').then(m =>
 m.PessoaCandidaturasComponent),
 canActivate: [AuthGuard]
-}
+},
+ {
+    path: 'escolher-perfil',
+    component: EscolherPerfilComponent,
+  },
 ];

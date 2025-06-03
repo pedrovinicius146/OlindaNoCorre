@@ -1,0 +1,106 @@
+/* src/app/pages/auth/escolher-perfil.component.css */
+
+/* Container de tela cheia */
+.escolher-perfil-container {
+  min-height: 100vh;
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.9) 0%,
+    rgba(118, 75, 162, 0.9) 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+/* Card centralizado */
+.escolher-perfil-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  padding: 2.5rem 2rem;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: fadeIn 0.6s ease-out;
+}
+
+/* Animação de fadeIn */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Título */
+.escolher-perfil-title {
+  color: #2d3748;
+  font-weight: 700;
+  font-size: 1.75rem;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+/* Wrapper dos botões */
+.buttons-wrapper {
+  display: grid;
+  gap: 1rem;
+}
+
+/* Estilo base para ambos os botões */
+.perfil-button {
+  width: 100%;
+  padding: 14px 0;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Botão “Empresa” */
+.empresa-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+.empresa-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+/* Botão “Candidato” */
+.candidato-button {
+  background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
+}
+.candidato-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(17, 153, 142, 0.3);
+}
+
+/* Botões desabilitados (caso queira desabilitar em algum contexto) */
+.perfil-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsivo para telas pequenas */
+@media (max-width: 480px) {
+  .escolher-perfil-card {
+    padding: 2rem 1rem;
+    margin: 1rem;
+  }
+  .escolher-perfil-title {
+    font-size: 1.5rem;
+  }
+}

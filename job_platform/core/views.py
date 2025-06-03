@@ -341,3 +341,29 @@ def dashboard_stats(request):
 @permission_classes([IsAuthenticated])
 def get_authenticated_user(request):
     return Response(UserSerializer(request.user).data)
+@api_view(['GET', 'PUT', 'PATCH'])
+@permission_classes([IsAuthenticated])
+def profile_update(request):
+    user = request.user
+
+    if request.method == 'GET':
+        # Retorna os dados do usuário atual
+        if user.user_type == 'empresa':
+            try:
+                return Response(EmpresaSerializer(user.empresa).data)
+            except:
+                return Response({'error': 'Empresa não encontrada'}, status=404)
+        elif user.user_type == 'candidato':
+            try:
+                return Response(CandidatoSerializer(user.candidato).data)
+            except:
+                return Response({'error': 'Candidato não encontrado'}, status=404)
+        return Response(UserSerializer(user).data)
+
+    # PUT ou PATCH para atualizar dados
+    serializer = UserUpdateSerializer(user, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(UserSerializer(user).data)
+    return Response(serializer.errors, status=400)
+

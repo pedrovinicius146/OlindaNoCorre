@@ -1,3 +1,5 @@
+// src/app/pages/vagas/vagas.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -8,7 +10,11 @@ import {
 } from '@angular/forms';
 import { map } from 'rxjs/operators';
 import { VagaService } from '../../shared/services/vaga.service';
-import { Vaga, AreaAtuacao, Candidatura } from '../../shared/models/models/models.component';
+import {
+  Vaga,
+  AreaAtuacao,
+} from '../../shared/models/models/models.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-vagas',
@@ -16,7 +22,12 @@ import { Vaga, AreaAtuacao, Candidatura } from '../../shared/models/models/model
   imports: [CommonModule, ReactiveFormsModule],
   styleUrls: ['./vagas.component.css'],
   template: `
-     <div class="vagas-container">
+    <div class="vagas-container">
+      <!-- Botão no canto superior direito -->
+      <button class="vagas-btn-canto" (click)="irParaPerfilPessoa()">
+        👤 Meu Perfil 
+      </button>
+
       <h2 class="vagas-title">🔍 Vagas Disponíveis</h2>
 
       <!-- Filtros -->
@@ -26,10 +37,7 @@ import { Vaga, AreaAtuacao, Candidatura } from '../../shared/models/models/model
             <!-- Área de Atuação -->
             <div class="form-group">
               <label class="form-label">🏢 Área de Atuação</label>
-              <select
-                formControlName="area_atuacao"
-                class="form-select"
-              >
+              <select formControlName="area_atuacao" class="form-select">
                 <option value="">Todas as áreas</option>
                 <option *ngFor="let area of areasAtuacao" [value]="area.id">
                   {{ area.nome | titlecase }}
@@ -49,7 +57,11 @@ import { Vaga, AreaAtuacao, Candidatura } from '../../shared/models/models/model
             </div>
 
             <button type="submit" class="btn-filtro">🔍 Filtrar</button>
-            <button type="button" (click)="limparFiltros()" class="btn-limpar">
+            <button
+              type="button"
+              (click)="limparFiltros()"
+              class="btn-limpar"
+            >
               🗑 Limpar
             </button>
           </div>
@@ -113,7 +125,9 @@ import { Vaga, AreaAtuacao, Candidatura } from '../../shared/models/models/model
 
         <div class="modal-form-group mb-4">
           <strong>{{ vagaSelecionada?.titulo }}</strong><br />
-          <small>{{ vagaSelecionada?.area_atuacao_nome | titlecase }}</small>
+          <small>
+            {{ vagaSelecionada?.area_atuacao_nome | titlecase }}
+          </small>
         </div>
 
         <form [formGroup]="candidaturaForm" (ngSubmit)="enviarCandidatura()">
@@ -146,7 +160,9 @@ import { Vaga, AreaAtuacao, Candidatura } from '../../shared/models/models/model
           <div class="flex space-x-2">
             <button
               type="submit"
-              [disabled]="candidaturaForm.invalid || carregandoCandidatura"
+              [disabled]="
+                candidaturaForm.invalid || carregandoCandidatura
+              "
               class="modal-btn modal-btn-enviar"
             >
               {{ carregandoCandidatura ? 'Enviando...' : 'Enviar' }}
@@ -180,7 +196,8 @@ export class VagasComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private vagaService: VagaService
+    private vagaService: VagaService,
+    private router: Router // injeção correta do Router
   ) {
     this.filtroForm = this.fb.group({
       area_atuacao: [''],
@@ -195,10 +212,10 @@ export class VagasComponent implements OnInit {
     // popula áreas de atuação
     this.vagaService
       .listarAreasAtuacao()
-      .pipe(map(res => res.results))
+      .pipe(map((res) => res.results))
       .subscribe({
-        next: areas => this.areasAtuacao = areas,
-        error: () => console.error('Falha ao carregar áreas')
+        next: (areas) => (this.areasAtuacao = areas),
+        error: () => console.error('Falha ao carregar áreas'),
       });
 
     // lista inicial de vagas
@@ -214,15 +231,15 @@ export class VagasComponent implements OnInit {
     delete filtros.salario_minimo;
 
     this.vagaService.listarVagas(filtros).subscribe({
-      next: v => {
+      next: (v) => {
         this.vagas = v;
         this.loading = false;
       },
-      error: err => {
+      error: (err) => {
         console.error('Erro ao carregar vagas:', err);
         this.vagas = [];
         this.loading = false;
-      }
+      },
     });
   }
 
@@ -260,8 +277,10 @@ export class VagasComponent implements OnInit {
 
     const formData = new FormData();
     formData.append('vaga', String(this.vagaSelecionada?.id ?? ''));
-
-    formData.append('resposta_pergunta', this.candidaturaForm.value.resposta_pergunta);
+    formData.append(
+      'resposta_pergunta',
+      this.candidaturaForm.value.resposta_pergunta
+    );
     if (this.selectedCurriculo) {
       formData.append('curriculum_especifico', this.selectedCurriculo);
     }
@@ -270,12 +289,15 @@ export class VagasComponent implements OnInit {
       next: () => {
         this.carregandoCandidatura = false;
         this.fecharModal();
-        // opcional: notificar sucesso…
       },
-      error: err => {
+      error: (err) => {
         this.erroCandidatura = 'Erro ao enviar candidatura.';
         this.carregandoCandidatura = false;
-      }
+      },
     });
+  }
+
+  irParaPerfilPessoa() {
+    this.router.navigate(['pessoa/perfil']);
   }
 }

@@ -74,7 +74,7 @@ this.authService.getCurrentUser().subscribe(user => {
 if (user.tipo_usuario === 'empresa') {
 this.router.navigate(['/empresa/vagas-em-aberto']);
 } else {
-this.router.navigate(['/pessoa/vagas']);
+this.router.navigate(['/escolher-perfil']);
 }
 });
 },

@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from
 '@angular/forms';
 import { AuthService } from '../../shared/services/auth.service';
 import { Usuario } from '../../shared/models/models/models.component';
+import { Router } from '@angular/router';
 @Component({
 selector: 'app-perfil',
 standalone: true,
@@ -124,57 +125,90 @@ template: `
             class="loading-spinner"
           ></span>
           <span *ngIf="!loading">💾 Salvar Alterações</span>
-        </button>
+        </button><button (click)="goToPessoaVagas()" class="btn-secondary">Voltar</button>
       </form>
+           
     </div>
 `
 })
 export class PerfilComponent implements OnInit {
-perfilForm: FormGroup;
-currentUser: Usuario | null = null;
-loading = false;
-message = '';
-messageType = '';
-selectedFile: File | null = null;
-constructor(
-private fb: FormBuilder,
-private authService: AuthService
-) {
-this.perfilForm = this.fb.group({
-username: ['', Validators.required],
-email: ['', [Validators.required, Validators.email]],
-nome_completo: [''],
-password: ['']
-});
-}
-ngOnInit() {
-this.authService.currentUser$.subscribe(user => {
-if (user) {
-this.currentUser = user;
-this.perfilForm.patchValue({
-username: user.username,
-email: user.email,
-nome_completo: (user as any).nome_completo || ''
-});
-}
-});
-}
-onFileSelect(event: any) {
-const file = event.target.files[0];
-if (file) {
-this.selectedFile = file;
-}
-}
-onSubmit() {
-if (this.perfilForm.valid) {
-this.loading = true;
-this.message = '';
-// Simular atualização do perfil
-setTimeout(() => {
-this.message = 'Perfil atualizado com sucesso!';
-this.messageType = 'success';
-this.loading = false;
-}, 1000);
-}
-}
+  perfilForm: FormGroup;
+  currentUser: Usuario | null = null;
+  loading = false;
+  message = '';
+  messageType = '';
+  selectedFile: File | null = null;
+
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router  // <-- injeta Router aqui
+  ) {
+    this.perfilForm = this.fb.group({
+      username: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      nome_completo: [''],
+      password: ['']
+    });
+  }
+
+  ngOnInit() {
+    this.authService.currentUser$.subscribe(user => {
+      if (user) {
+        this.currentUser = user;
+        this.perfilForm.patchValue({
+          username: user.username,
+          email: user.email,
+          nome_completo: (user as any).nome_completo || ''
+        });
+      }
+    });
+  }
+
+  onFileSelect(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+    }
+  }
+
+  onSubmit() {
+    if (this.perfilForm.valid) {
+      this.loading = true;
+      this.message = '';
+
+      const formData = new FormData();
+      formData.append('username', this.perfilForm.value.username);
+      formData.append('email', this.perfilForm.value.email);
+      if (this.perfilForm.value.password) {
+        formData.append('password', this.perfilForm.value.password);
+      }
+      if (this.selectedFile) {
+        formData.append('foto_perfil', this.selectedFile);
+      }
+
+      this.authService.updateProfile(formData).subscribe({
+        next: (user) => {
+          this.message = 'Perfil atualizado com sucesso!';
+          this.messageType = 'success';
+          this.loading = false;
+          this.authService.getCurrentUser().subscribe(); // atualiza observable global
+        },
+        error: () => {
+          this.message = 'Erro ao atualizar perfil.';
+          this.messageType = 'error';
+          this.loading = false;
+        }
+      });
+    }
+  }
+
+  // Métodos de navegação:
+  goToEmpresaVagas() {
+    this.router.navigate(['empresa/vagas-em-aberto']);
+  }
+
+  goToPessoaVagas() {
+    this.router.navigate(['pessoa/vagas']);
+  }
 }
